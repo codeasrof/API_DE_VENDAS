@@ -1,4 +1,5 @@
 import Product from "@modules/products/typeorm/entities/Product";
+import User from "@modules/users/typeorm/entities/User";
 import { createConnection } from "typeorm";
 
 createConnection({
@@ -8,7 +9,8 @@ createConnection({
   username: "postgres",
   password:"docker",
   entities:[
-    Product
+    Product,
+    User
   ],
   synchronize:true
 })
