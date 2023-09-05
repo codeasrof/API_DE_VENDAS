@@ -14,14 +14,14 @@ export default class ProductController{
     return response.json(products)
   }
 
-  public async show(request:Request, response:Response) : Promise<Response>{
-
+  public async show(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
 
-    const showProduct = new ShowProductService()
-    const product = showProduct.execute({id})
+    const showProduct = new ShowProductService();
 
-    return response.json(product)
+    const product = await showProduct.execute({ id });
+
+    return response.json(product);
   }
 
   public async create(request: Request, response:Response) : Promise<Response>{
@@ -51,11 +51,13 @@ export default class ProductController{
     return response.json(product)
   }
 
-  public async delete(request:Request, response:Response) : Promise<Response> {
-    const { id } = request.params
-    const deleteProduct = new DeleteProductService()
-    await deleteProduct.execute({id})
-    return response.json({})
-  }
+  public async delete(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
 
+    const deleteProduct = new DeleteProductService();
+
+    await deleteProduct.execute({ id });
+
+    return response.json([]);
+  }
 }

@@ -1,17 +1,16 @@
 import { getCustomRepository } from "typeorm"
 import { ProductResposity } from "../typeorm/repositories/ProductsRepository"
 
-import Product from "../typeorm/Product"
+import Product from "../typeorm/entities/Product"
 
 class ListProductService {
+  public async execute(): Promise<Product[]> {
+    const productsRepository = getCustomRepository(ProductResposity);
 
-  public async execute(): Promise<Product[]>{
-
-    const productsRepository = getCustomRepository(ProductResposity)
     const products = productsRepository.find();
-    return products
-  }
 
+    return products;
+  }
 }
 
-export default ListProductService
+export default ListProductService;
