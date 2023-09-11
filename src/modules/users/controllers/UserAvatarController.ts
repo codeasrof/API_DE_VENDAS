@@ -1,18 +1,16 @@
-import { Request, Response } from "express";
-import UpdateUserAvatarService from "../services/UpdateUserAvatarService";
+import { Request, Response } from 'express';
+import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
+import { instanceToInstance } from 'class-transformer';
 
-export default class UserAvatarController{
+export default class UserAvatarController {
+  public async update(request: Request, response: Response): Promise<Response> {
+    const updateAvatar = new UpdateUserAvatarService();
 
-  public async update(request: Request, response:Response) : Promise<Response>{
-
-    const updateAvatar = new UpdateUserAvatarService()
-    const fileExists = request.file?.filename;
-
-    const user = updateAvatar.execute({
+    const user = await updateAvatar.execute({
       user_id: request.user.id,
-      avatarFilename:fileExists,
-    })
-    return response.json(user)
+      avatarFilename: request.file?.filename,
+    });
 
+    return response.json(instanceToInstance(user));
   }
 }

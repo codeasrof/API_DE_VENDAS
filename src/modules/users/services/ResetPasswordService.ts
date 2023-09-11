@@ -1,45 +1,43 @@
-import { getCustomRepository } from "typeorm"
-import { isAfter, addHours } from "date-fns"
-import { hash } from "bcryptjs"
-import AppError from "@shared/errors/AppError"
-import UsersRepository from "../typeorm/repositories/UsersRepository"
-import UserTokensRepository from "../typeorm/repositories/UserTokensRepository"
+import AppError from '@shared/errors/AppError';
+import { getCustomRepository } from 'typeorm';
+import { hash } from 'bcryptjs';
+import { isAfter, addHours } from 'date-fns';
+import UsersRepository from '../typeorm/repositories/UsersRepository';
+import UserTokensRepository from '../typeorm/repositories/UserTokensRepository';
 
 interface IRequest {
-  token:string
-  password: string
+  token: string;
+  password: string;
 }
 
 class ResetPasswordService {
 
-  public async execute({token, password}: IRequest): Promise<void>{
+  public async execute({ token, password }: IRequest): Promise<void> {
 
-    const usersRepository = getCustomRepository(UsersRepository)
-    const userTokenRepository = getCustomRepository(UserTokensRepository)
+    const usersRepository = getCustomRepository(UsersRepository);
+    const userTokensRepository = getCustomRepository(UserTokensRepository);
+    const userToken = await userTokensRepository.findByToken(token);
 
-    const userToken = await userTokenRepository.findByToken(token)
-
-    if(!userToken){
-      throw new AppError("User token does not exist!")
-    }
-    const user = await usersRepository.findById(userToken.user_id)
-
-    if(!user){
-      throw new AppError("User does not exist!")
+    if (!userToken) {
+      throw new AppError('User Token does not exists.');
     }
 
-    const tokenCreatedAt = userToken.created_at
-    const compareDate = addHours(tokenCreatedAt, 2)
+    const user = await usersRepository.findById(userToken.user_id);
 
-    if(isAfter(Date.now(), compareDate)){
-      throw new AppError("Token expired!")
+    if (!user) {
+      throw new AppError('User does not exists.');
     }
 
-    user.password = await hash(password, 16)
+    const tokenCreatedAt = userToken.created_at;
+    const compareDate = addHours(tokenCreatedAt, 2);
 
+    if (isAfter(Date.now(), compareDate)) {
+      throw new AppError('Token expired.');
+    }
+    user.password = await hash(password, 8);
+    console.log(user)
+    await usersRepository.save(user);
   }
-
-
 }
 
-export default ResetPasswordService
+export default ResetPasswordService;
